@@ -2,24 +2,9 @@
 // api/index.php - Vercel Serverless Entry Point
 // Academia FJC - Todas as rotas passam por aqui
 
-// ── Base paths ──────────────────────────────────────────────
+// ── Autoloader ─────────────────────────────────────────────────
 $base = dirname(__DIR__);
-
-// ── Autoloaders ─────────────────────────────────────────────
-spl_autoload_register(function ($class) use ($base) {
-    $map = [
-        'Core\\'       => $base . '/api/Core/',
-        'Models\\'     => $base . '/api/Models/',
-        'Controllers\\'=> $base . '/api/Controllers/',
-    ];
-    foreach ($map as $prefix => $dir) {
-        if (strncmp($prefix, $class, strlen($prefix)) === 0) {
-            $rel = substr($class, strlen($prefix));
-            $file = $dir . str_replace('\\', '/', $rel) . '.php';
-            if (file_exists($file)) { require_once $file; return; }
-        }
-    }
-});
+require_once $base . '/vendor/autoload.php';
 
 // ── Helpers & Config ────────────────────────────────────────
 require_once $base . '/api/config/helpers.php';

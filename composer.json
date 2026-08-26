@@ -3,5 +3,11 @@
   "description": "Sistema de Gestão de Alunos - Academia de Artes e Música FJC",
   "type": "project",
   "require": {},
-  "autoload": {}
+  "autoload": {
+    "psr-4": {
+      "Core\\": "api/Core/",
+      "Models\\": "api/Models/",
+      "Controllers\\": "api/Controllers/"
+    }
+  }
 }
