@@ -1,13 +1,18 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "services": {
-    "api": {
-      "root": ".",
-      "entrypoint": "Dockerfile.vercel",
-      "runtime": "container"
+  "buildCommand": "echo 'Using container runtime'",
+  "devCommand": "frankenphp run --config Caddyfile",
+  "installCommand": "composer install --no-dev --optimize-autoloader",
+  "framework": null,
+  "regions": ["iad1"],
+  "functions": {
+    "api/index.php": {
+      "runtime": "php@8.3",
+      "maxDuration": 30
     }
   },
   "rewrites": [
-    { "source": "/(.*)", "destination": { "service": "api" } }
+    { "source": "/assets/(.*)", "destination": "/public/assets/$1" },
+    { "source": "/(.*)", "destination": "/api/index.php" }
   ]
 }
