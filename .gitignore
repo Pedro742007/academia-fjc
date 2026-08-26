@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Environment / secrets
+.env
+.env.local
+.env.production
+api/config/database.local.php
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Deploy packages
+*.zip
+deploy/
+
+# Logs
+*.log
+npm-debug.log*
+
+# PHP
+*.phar
+
+# Local/personal
+.htaccess
+*.pdf
+*.jpeg
+*.jpg
+!public/assets/img/logo.jpg
