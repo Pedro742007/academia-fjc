@@ -1,0 +1,7 @@
+{
+  "name": "academia-fjc/sistema",
+  "description": "Sistema de Gestão de Alunos - Academia de Artes e Música FJC",
+  "type": "project",
+  "require": {},
+  "autoload": {}
+}

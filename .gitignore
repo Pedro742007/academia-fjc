@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+vendor/
 
 # Environment / secrets
 .env
@@ -34,3 +35,5 @@ npm-debug.log*
 *.jpeg
 *.jpg
 !public/assets/img/logo.jpg
+
+.vercel

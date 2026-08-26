@@ -1,0 +1,18 @@
+FROM composer:2 AS dependencies
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --no-progress --optimize-autoloader
+
+FROM dunglas/frankenphp:1-php8.3-alpine
+RUN apk add --no-cache php83-pdo_mysql php83-mbstring php83-openssl php83-json php83-phar
+
+WORKDIR /app
+COPY --from=dependencies /app/vendor ./vendor
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY public ./public
+COPY api ./api
+COPY src ./src
+COPY database ./database
+
+ENV PORT=80
+CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
