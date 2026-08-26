@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "echo 'Using container runtime'",
-  "devCommand": "frankenphp run --config Caddyfile",
+  "buildCommand": "composer install --no-dev --optimize-autoloader",
+  "devCommand": "php -S localhost:3000 -t public api/index.php",
   "installCommand": "composer install --no-dev --optimize-autoloader",
   "framework": null,
   "regions": ["iad1"],
