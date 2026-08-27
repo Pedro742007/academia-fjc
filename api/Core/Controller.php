@@ -161,7 +161,8 @@ abstract class Controller
 
     protected function verifyCsrf(): void
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $method = strtoupper($_SERVER['REQUEST_METHOD']);
+        if ($method !== 'GET' && $method !== 'HEAD') {
             $token = $_POST['_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
             if (empty($token) || !hash_equals($_SESSION['csrf_token'] ?? '', $token)) {
                 http_response_code(403);

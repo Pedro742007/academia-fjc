@@ -57,9 +57,11 @@ document.addEventListener("DOMContentLoaded", function() {
             return d1 + l + d2;
         },
         moeda: (v) => {
-            v = v.replace(/\\D/g, "");
-            if (!v) return "";
-            return (parseInt(v) / 100).toLocaleString("pt-AO", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            const digits = v.replace(/\\D/g, "");
+            if (!digits) return "";
+            const num = parseInt(digits, 10);
+            let str = num.toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ".");
+            return str + ",00";
         },
         alpha: (v) => v.replace(/[^a-zA-ZÀ-ÿ\\s]/g, "")
     };

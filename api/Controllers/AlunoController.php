@@ -212,7 +212,13 @@ class AlunoController extends Controller
         }
 
         $data = $_POST;
-        
+
+        foreach (['valor_inscricao', 'valor_entregue', 'valor_total_pago', 'valor_pendente'] as $campo) {
+            if (isset($data[$campo]) && $data[$campo] !== '') {
+                $data[$campo] = (string)floatval(str_replace(',', '.', str_replace('.', '', $data[$campo])));
+            }
+        }
+
         if (!empty($data['data_nascimento'])) {
             $data['idade'] = $this->alunoModel->calcularIdade($data['data_nascimento']);
         }

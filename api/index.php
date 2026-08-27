@@ -66,15 +66,12 @@ $basePath = '';
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = rawurldecode($uri);
 
-// Strip project subdirectory if present (e.g., /Academia FJC/public/...)
-// Detect if running in a subdirectory
-$scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
-$basePath = dirname($scriptName);
-if ($basePath !== '/' && $basePath !== '\\' && $basePath !== '') {
-    $basePath = rtrim($basePath, '/\\');
-    if (str_starts_with($uri, $basePath)) {
-        $uri = substr($uri, strlen($basePath));
-    }
+// Em XAMPP o entry point fica em /public/index.php, por isso removemos
+// tudo até (e incluindo) o segmento "/public". No Vercel não existe esse
+// segmento e a URI mantém-se intacta (ex: /alunos/1).
+$publicPos = strpos($uri, '/public');
+if ($publicPos !== false) {
+    $uri = substr($uri, $publicPos + strlen('/public'));
 }
 
 $uri = rtrim($uri, '/');
@@ -90,6 +87,7 @@ $routes = [
     'GET /alunos'                   => ['Controllers\\AlunoController', 'index'],
     'GET /alunos/{id:\d+}'          => ['Controllers\\AlunoController', 'show'],
     'GET /alunos/{id:\d+}/edit'     => ['Controllers\\AlunoController', 'edit'],
+    'PUT /alunos/{id:\d+}'          => ['Controllers\\AlunoController', 'update'],
     'POST /alunos/{id:\d+}'         => ['Controllers\\AlunoController', 'update'],
     'DELETE /alunos/{id:\d+}'       => ['Controllers\\AlunoController', 'destroy'],
     'GET /api/alunos/search'        => ['Controllers\\AlunoController', 'apiSearch'],
@@ -99,6 +97,7 @@ $routes = [
     'POST /cursos'                  => ['Controllers\\CursoController', 'store'],
     'GET /cursos/{id:\d+}'          => ['Controllers\\CursoController', 'edit'],
     'GET /cursos/{id:\d+}/editar'   => ['Controllers\\CursoController', 'edit'],
+    'PUT /cursos/{id:\d+}'          => ['Controllers\\CursoController', 'update'],
     'POST /cursos/{id:\d+}'         => ['Controllers\\CursoController', 'update'],
     'DELETE /cursos/{id:\d+}'       => ['Controllers\\CursoController', 'destroy'],
 

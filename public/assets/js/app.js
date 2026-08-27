@@ -89,17 +89,21 @@ function initMasks() {
     // Moeda
     document.querySelectorAll('input[data-mask="moeda"]').forEach(input => {
         input.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            value = (parseInt(value) / 100).toFixed(2) + '';
-            value = value.replace('.', ',');
-            value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            e.target.value = value;
+            let digits = e.target.value.replace(/\D/g, '');
+            if (digits === '') {
+                e.target.value = '';
+                return;
+            }
+            const num = parseInt(digits, 10);
+            let str = num.toString();
+            str = str.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            e.target.value = str + ',00';
         });
-        
+
         input.addEventListener('focus', function(e) {
             if (e.target.value === '0,00') e.target.value = '';
         });
-        
+
         input.addEventListener('blur', function(e) {
             if (!e.target.value) e.target.value = '0,00';
         });
