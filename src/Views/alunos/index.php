@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 <select name="curso_id" class="form-select">
                     <option value="">Todos os cursos</option>
                     <?php foreach ($cursos as $curso): ?>
-                        <option value="<?= $curso['id'] ?>"><?= htmlspecialchars($curso['nome']) ?></option>
+                        <option value="<?= $curso['id'] ?>" <?= ($curso_id ?? '') == $curso['id'] ? 'selected' : '' ?>><?= htmlspecialchars($curso['nome']) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>

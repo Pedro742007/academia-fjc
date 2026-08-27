@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
     
+    
     // Auto-calcular idade
     document.querySelector("input[name=\'data_nascimento\']")?.addEventListener("change", function() {
         const nascimento = new Date(this.value);
@@ -84,6 +85,17 @@ document.addEventListener("DOMContentLoaded", function() {
     <a href="<?= url('/alunos') ?>" class="btn btn-light btn-lg"><i class="bi bi-arrow-left me-1"></i> Listar Alunos</a>
     <?php endif; ?>
 </div>
+
+<?php if (!empty($_SESSION['errors'])): ?>
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            <?php foreach ($_SESSION['errors'] as $field => $msg): ?>
+                <li><?= htmlspecialchars($msg) ?></li>
+            <?php endforeach; ?>
+            <?php unset($_SESSION['errors']); ?>
+        </ul>
+    </div>
+<?php endif; ?>
 
 <form method="POST" action="<?= url('/inscricao') ?>" class="needs-validation" novalidate>
     <?= csrf_field() ?>

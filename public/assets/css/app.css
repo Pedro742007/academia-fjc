@@ -68,6 +68,7 @@ body {
     line-height: 1.6;
     font-size: 0.9375rem;
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6,
@@ -890,4 +891,114 @@ main, .main-content { animation: fadeIn 0.35s ease both; }
         box-shadow: var(--shadow-sm);
     }
     .navbar .btn-user { margin-left: auto; }
+
+    /* Itens do menu empilhados e com área de toque maior */
+    .navbar-collapse .nav-link {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.95rem;
+    }
+
+    /* Área do utilizador ocupa toda a largura no menu colapsado */
+    .navbar-collapse .d-flex.align-items-center {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid var(--border);
+    }
+    .navbar-collapse .dropdown { width: 100%; }
+    .navbar-collapse .btn-user { width: 100%; text-align: left; }
+    .navbar-collapse .dropdown-menu { width: 100%; }
+}
+
+/* ============ RESPONSIVIDADE GERAL (MOBILE) ============ */
+@media (max-width: 767.98px) {
+    /* Container com menos padding nas bordas */
+    .container-fluid {
+        padding-left: 0.85rem !important;
+        padding-right: 0.85rem !important;
+    }
+
+    /* Page header empilha título e botões */
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    .page-header .btn,
+    .page-header a.btn {
+        width: 100%;
+    }
+
+    /* Cards com padding reduzido */
+    .card-body { padding: 1rem; }
+    .card-header { padding: 0.75rem 1rem; font-size: 0.9rem; }
+
+    /* Stat cards em 2 colunas no telemóvel */
+    .row.g-3 > .col-md-3 {
+        flex: 0 0 auto;
+        width: 50%;
+    }
+    .stat-card h3 { font-size: 1.35rem; }
+
+    /* Tabelas: fonte menor e scroll já existe (.table-responsive) */
+    .table thead th { padding: 0.6rem 0.7rem; font-size: 0.75rem; }
+    .table tbody td { padding: 0.6rem 0.7rem; font-size: 0.82rem; }
+
+    /* Botões de ação em grupo ficam compactos */
+    .btn-group-sm > .btn { padding: 0.3rem 0.5rem; }
+
+    /* Botões grandes menores no mobile */
+    .btn-lg { padding: 0.55rem 1rem; font-size: 0.95rem; }
+
+    /* Formulários: inputs grande viram normais no mobile para não estourar */
+    .form-control-lg, .form-select-lg { font-size: 0.95rem; padding: 0.5rem 0.8rem; }
+
+    /* Detalhes (show) empilham label/valor (já tem regra, reforça) */
+    .detail-label { width: 140px; font-size: 0.8rem; }
+    .detail-value { font-size: 0.85rem; }
+
+    /* Espaçamento inferior dos botões de formulário */
+    .d-flex.justify-content-end.gap-2,
+    .d-flex.justify-content-end.gap-3 {
+        flex-direction: column;
+    }
+    .d-flex.justify-content-end.gap-2 .btn,
+    .d-flex.justify-content-end.gap-3 .btn {
+        width: 100%;
+    }
+
+    /* Navbar data/hora escondida no mobile para poupar espaço */
+    .navbar-text.d-none.d-md-inline { display: none !important; }
+
+    /* Logo da navbar menor */
+    .navbar-brand .brand-logo { width: 30px; height: 40px; }
+    .navbar-brand { font-size: 1rem; }
+}
+
+@media (max-width: 575.98px) {
+    /* Uma coluna para stat cards muito pequenos */
+    .row.g-3 > .col-md-3 {
+        width: 100%;
+    }
+
+    /* Título principal menor */
+    .page-header h2 { font-size: 1.2rem; }
+
+    /* Card de curso ocupa largura total */
+    .col-md-6.col-xl-4 { width: 100%; }
+
+    /* Ajuste de padding do card de autenticação */
+    .auth-card .p-4.p-md-5 { padding: 1.25rem !important; }
+
+    /* Inputs de data/number empilham naturalmente via grid */
+    .col-md-2, .col-md-3, .col-md-4, .col-md-6, .col-md-7, .col-md-8 {
+        width: 100%;
+    }
+}
+
+/* Telas muito largas: limita largura do conteúdo para leitura */
+@media (min-width: 1600px) {
+    .container-fluid { max-width: 1540px; margin: 0 auto; }
 }

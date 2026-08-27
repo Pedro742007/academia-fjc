@@ -46,11 +46,34 @@ class Aluno extends Model
     {
         $year = date('Y');
         $prefix = "FJC-{$year}-";
-        $stmt = $this->db->prepare("SELECT COALESCE(MAX(CAST(SUBSTRING_INDEX(numero_aluno, '-', -1) AS UNSIGNED)), 0) FROM {$this->table} WHERE numero_aluno LIKE ?");
-        $stmt->execute(["{$prefix}%"]);
-        $next = (int)$stmt->fetchColumn() + 1;
 
-        return sprintf('%s%04d', $prefix, $next);
+        // Use a transaction with SELECT FOR UPDATE to prevent race conditions
+        $this->db->beginTransaction();
+        try {
+            $stmt = $this->db->prepare(
+                "SELECT COALESCE(MAX(CAST(SUBSTRING_INDEX(numero_aluno, '-', -1) AS UNSIGNED)), 0) 
+                 FROM {$this->table} WHERE numero_aluno LIKE ? FOR UPDATE"
+            );
+            $stmt->execute(["{$prefix}%"]);
+            $next = (int)$stmt->fetchColumn() + 1;
+
+            $numero = sprintf('%s%04d', $prefix, $next);
+
+            // Verify the number doesn't exist (double-check)
+            $checkStmt = $this->db->prepare("SELECT 1 FROM {$this->table} WHERE numero_aluno = ?");
+            $checkStmt->execute([$numero]);
+            if ($checkStmt->fetch()) {
+                // If somehow exists, retry recursively (should be very rare)
+                $this->db->rollBack();
+                return $this->generateNumeroAluno();
+            }
+
+            $this->db->commit();
+            return $numero;
+        } catch (\Throwable $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
     }
 
     public function paginate(int $page = 1, int $perPage = 15, array $conditions = [], string $orderBy = 'id', string $orderDir = 'DESC'): array
@@ -61,6 +84,7 @@ class Aluno extends Model
         $params = [];
 
         foreach ($conditions as $column => $value) {
+            $this->validateColumn($column);
             $where .= " AND a.{$column} = ?";
             $params[] = $value;
         }
@@ -69,6 +93,9 @@ class Aluno extends Model
         $countStmt->execute($params);
         $total = $countStmt->fetchColumn();
 
+        $this->validateColumn($orderBy);
+        $orderDir = strtoupper($orderDir) === 'ASC' ? 'ASC' : 'DESC';
+        
         $sql = "SELECT a.*, c.nome as curso_nome FROM {$this->table} a 
                 LEFT JOIN cursos c ON a.curso_id = c.id 
                 {$where} ORDER BY a.{$orderBy} {$orderDir} LIMIT {$perPage} OFFSET {$offset}";
@@ -85,22 +112,30 @@ class Aluno extends Model
         ];
     }
 
-    public function search(string $term, int $page = 1, int $perPage = 15): array
+    public function search(string $term, int $page = 1, int $perPage = 15, array $conditions = []): array
     {
         $offset = ($page - 1) * $perPage;
         $searchTerm = "%{$term}%";
 
-        $where = "WHERE ativo = 1 AND (
-            numero_aluno LIKE ? OR 
-            nome_completo LIKE ? OR 
-            numero_documento LIKE ? OR 
-            responsavel1_nome LIKE ? OR
-            emergencia_nome LIKE ?
+        $where = "WHERE a.ativo = 1";
+        $params = [];
+
+        foreach ($conditions as $column => $value) {
+            $where .= " AND a.{$column} = ?";
+            $params[] = $value;
+        }
+
+        $where .= " AND (
+            a.numero_aluno LIKE ? OR 
+            a.nome_completo LIKE ? OR 
+            a.numero_documento LIKE ? OR 
+            a.responsavel1_nome LIKE ? OR
+            a.emergencia_nome LIKE ?
         )";
 
-        $params = [$searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm];
+        $params = array_merge($params, [$searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm]);
 
-        $countStmt = $this->db->prepare("SELECT COUNT(*) FROM {$this->table} {$where}");
+        $countStmt = $this->db->prepare("SELECT COUNT(*) FROM {$this->table} a {$where}");
         $countStmt->execute($params);
         $total = $countStmt->fetchColumn();
 
@@ -141,9 +176,13 @@ class Aluno extends Model
         $params = [];
 
         foreach ($conditions as $column => $value) {
+            $this->validateColumn($column);
             $where .= " AND a.{$column} = ?";
             $params[] = $value;
         }
+
+        $this->validateColumn($orderBy);
+        $orderDir = strtoupper($orderDir) === 'ASC' ? 'ASC' : 'DESC';
 
         $sql = "SELECT a.*, c.nome as curso_nome FROM {$this->table} a 
                 LEFT JOIN cursos c ON a.curso_id = c.id 

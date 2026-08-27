@@ -3,6 +3,14 @@
 $title = 'Editar Curso: ' . htmlspecialchars($curso['nome']);
 ?>
 
+<?php
+function e(string $key, $fallback = ''): string {
+    return htmlspecialchars(old($key, $fallback));
+}
+?>
+
+<div class="page-header mb-4">
+
 <div class="page-header mb-4">
     <div>
         <h2><i class="bi bi-pencil me-2"></i>Editar Curso</h2>
@@ -32,16 +40,16 @@ $title = 'Editar Curso: ' . htmlspecialchars($curso['nome']);
                     <input type="hidden" name="_method" value="PUT">
                     <div class="mb-3">
                         <label class="form-label fw-medium">Nome do Curso <span class="text-danger">*</span></label>
-                        <input type="text" name="nome" class="form-control form-control-lg" value="<?= htmlspecialchars($curso['nome']) ?>" required minlength="3" maxlength="150">
+                        <input type="text" name="nome" class="form-control form-control-lg" value="<?= e('nome', $curso['nome']) ?>" required minlength="3" maxlength="150">
                         <div class="invalid-feedback">Informe o nome do curso (mín. 3 caracteres)</div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-medium">Descrição</label>
-                        <textarea name="descricao" class="form-control" rows="3"><?= htmlspecialchars($curso['descricao'] ?? '') ?></textarea>
+                        <textarea name="descricao" class="form-control" rows="3"><?= e('descricao', $curso['descricao'] ?? '') ?></textarea>
                     </div>
                     <div class="mb-4">
                         <label class="form-label fw-medium">Valor da Mensalidade (Kz) <span class="text-danger">*</span></label>
-                        <input type="text" name="valor_mensalidade" class="form-control form-control-lg text-end" value="<?= number_format($curso['valor_mensalidade'], 2, ',', '.') ?>" required data-mask="moeda">
+                        <input type="text" name="valor_mensalidade" class="form-control form-control-lg text-end" value="<?= e('valor_mensalidade', number_format($curso['valor_mensalidade'], 2, ',', '.')) ?>" required data-mask="moeda">
                         <div class="invalid-feedback">Informe o valor da mensalidade</div>
                     </div>
                     <div class="d-flex justify-content-end gap-2">

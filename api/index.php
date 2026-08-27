@@ -18,12 +18,27 @@ header('X-XSS-Protection: 1; mode=block');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
 
-// ── Session via banco de dados (compatível com serverless) ──
-$pdo = \Core\Database::getInstance($config);
-session_set_save_handler(
-    new \Core\DbSessionHandler($pdo),
-    true
-);
+// ── Session ──────────────────────────────────────────────────
+// DB-backed sessions are only needed on serverless (Vercel).
+// On local/XAMPP we use the native file handler with a writable path.
+$isVercel = getenv('VERCEL') !== false && getenv('VERCEL') !== '';
+
+if ($isVercel) {
+    $pdo = \Core\Database::getInstance($config);
+    session_set_save_handler(
+        new \Core\DbSessionHandler($pdo),
+        true
+    );
+} else {
+    // Ensure a writable session directory exists
+    $sessionDir = sys_get_temp_dir() . '/academia_fjc_sessions';
+    if (!is_dir($sessionDir)) {
+        @mkdir($sessionDir, 0700, true);
+    }
+    if (is_dir($sessionDir) && is_writable($sessionDir)) {
+        session_save_path($sessionDir);
+    }
+}
 
 // Cookie de sessão seguro
 ini_set('session.cookie_httponly', '1');
@@ -50,6 +65,18 @@ if (empty($_SESSION['csrf_token'])) {
 $basePath = '';
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = rawurldecode($uri);
+
+// Strip project subdirectory if present (e.g., /Academia FJC/public/...)
+// Detect if running in a subdirectory
+$scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+$basePath = dirname($scriptName);
+if ($basePath !== '/' && $basePath !== '\\' && $basePath !== '') {
+    $basePath = rtrim($basePath, '/\\');
+    if (str_starts_with($uri, $basePath)) {
+        $uri = substr($uri, strlen($basePath));
+    }
+}
+
 $uri = rtrim($uri, '/');
 
 if ($uri === '' || $uri === '/') {

@@ -35,12 +35,12 @@ class DbSessionHandler extends SessionHandler
         $stmt->execute([$id]);
         $row = $stmt->fetch();
 
-        if (!$row) return false;
+        if (!$row) return '';
 
         // Expirar sessões antigas (> 30 min)
         if (time() - (int)$row['timestamp'] > 1800) {
             $this->destroy($id);
-            return false;
+            return '';
         }
 
         return $row['data'];

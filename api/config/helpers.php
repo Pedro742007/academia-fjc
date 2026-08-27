@@ -74,6 +74,15 @@ if (!function_exists('base_url')) {
         if (defined('BASE_URL')) return BASE_URL;
         $proto = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        
+        // Detect subdirectory (e.g., /Academia FJC)
+        $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+        $basePath = dirname($scriptName);
+        if ($basePath !== '/' && $basePath !== '\\' && $basePath !== '') {
+            $basePath = rtrim(str_replace('\\', '/', $basePath), '/');
+            return $proto . '://' . $host . '/' . ltrim($basePath, '/');
+        }
+        
         return $proto . '://' . $host;
     }
 }

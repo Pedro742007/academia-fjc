@@ -15,101 +15,111 @@ function printFicha() {
     const aluno = ' . json_encode($aluno, JSON_UNESCAPED_UNICODE) . ';
     const logoUrl = ' . json_encode(asset('img/logo.jpg')) . ';
     
-    const html = `
-        <!DOCTYPE html>
-        <html lang="pt-AO">
-        <head>
-            <meta charset="UTF-8">
-            <title>Ficha de Inscrição - ${aluno.numero_aluno}</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-            <style>
-                @media print {
-                    .no-print { display: none !important; }
-                    body { padding: 20px; font-size: 12px; }
-                    .card { border: 1px solid #ddd; break-inside: avoid; }
-                    .card-header { background: #2c3e50 !important; -webkit-print-color-adjust: exact; }
-                }
-                .detail-row { display: flex; padding: 6px 0; border-bottom: 1px solid #eee; }
-                .detail-label { width: 220px; font-weight: 600; color: #333; flex-shrink: 0; font-size: 11px; }
-                .detail-value { flex: 1; font-size: 11px; }
-                .print-logo { width: 110px; height: auto; margin-bottom: 8px; }
-                .section-title { background: #2c3e50; color: white; padding: 8px 12px; margin: 15px -15px 10px -15px; font-size: 12px; }
-            </style>
-        </head>
-        <body>
-            <div class="text-center mb-4">
-                <img class="print-logo" src="${logoUrl}" alt="Academia de Artes e Música FJC">
-                <h3 class="mb-1">ACADEMIA DE ARTES</h3>
-                <h4 class="mb-0">FICHA DE INSCRIÇÃO DO ALUNO</h4>
-                <hr>
-                <div class="row">
-                    <div class="col-6 text-start"><strong>N.º do Aluno:</strong> ${aluno.numero_aluno}</div>
-                    <div class="col-6 text-end"><strong>Data:</strong> ${new Date().toLocaleDateString("pt-AO")}</div>
-                </div>
-            </div>
-            
-            <div class="card mb-3">
-                <div class="card-header text-white">DADOS DO ALUNO</div>
-                <div class="card-body p-3">
-                    <div class="detail-row"><span class="detail-label">Nome Completo:</span><span class="detail-value">${aluno.nome_completo}</span></div>
-                    <div class="detail-row"><span class="detail-label">Data de Nascimento:</span><span class="detail-value">${aluno.data_nascimento ? new Date(aluno.data_nascimento + "T00:00:00").toLocaleDateString("pt-AO") : ""}</span></div>
-                    <div class="detail-row"><span class="detail-label">Idade:</span><span class="detail-value">${aluno.idade} anos</span></div>
-                    <div class="detail-row"><span class="detail-label">Documento:</span><span class="detail-value">${aluno.tipo_documento} - ${aluno.numero_documento}</span></div>
-                    <div class="detail-row"><span class="detail-label">Morada:</span><span class="detail-value">${aluno.morada || "Não informada"}</span></div>
-                    <div class="detail-row"><span class="detail-label">Irmão(ã) matriculado:</span><span class="detail-value">${aluno.possui_irmao ? "Sim - " + (aluno.nome_irmao || "") : "Não"}</span></div>
-                </div>
-            </div>
-            
-            <div class="card mb-3">
-                <div class="card-header text-white">RESPONSÁVEIS LEGAIS</div>
-                <div class="card-body p-3">
-                    <div class="detail-row"><span class="detail-label">1º Responsável:</span><span class="detail-value">${aluno.responsavel1_nome || "Não informado"}</span></div>
-                    <div class="detail-row"><span class="detail-label">Parentesco:</span><span class="detail-value">${aluno.responsavel1_parentesco || ""}</span></div>
-                    <div class="detail-row"><span class="detail-label">Contacto:</span><span class="detail-value">${aluno.responsavel1_contacto || ""}</span></div>
-                    <div class="detail-row"><span class="detail-label">2º Responsável:</span><span class="detail-value">${aluno.responsavel2_nome || "Não informado"}</span></div>
-                    <div class="detail-row"><span class="detail-label">Parentesco:</span><span class="detail-value">${aluno.responsavel2_parentesco || ""}</span></div>
-                    <div class="detail-row"><span class="detail-label">Contacto:</span><span class="detail-value">${aluno.responsavel2_contacto || ""}</span></div>
-                </div>
-            </div>
-            
-            <div class="card mb-3">
-                <div class="card-header text-white">CONTACTO PARA RECADOS OU EMERGÊNCIAS</div>
-                <div class="card-body p-3">
-                    <div class="detail-row"><span class="detail-label">Nome:</span><span class="detail-value">${aluno.emergencia_nome || ""}</span></div>
-                    <div class="detail-row"><span class="detail-label">Telefone:</span><span class="detail-value">${aluno.emergencia_telefone || ""}</span></div>
-                </div>
-            </div>
-            
-            <div class="card mb-3">
-                <div class="card-header text-white">DADOS DA INSCRIÇÃO</div>
-                <div class="card-body p-3">
-                    <div class="detail-row"><span class="detail-label">Curso:</span><span class="detail-value">${aluno.curso_nome || "Não informado"}</span></div>
-                    <div class="detail-row"><span class="detail-label">Data da Inscrição:</span><span class="detail-value">${aluno.data_inscricao ? new Date(aluno.data_inscricao + "T00:00:00").toLocaleDateString("pt-AO") : ""}</span></div>
-                    <div class="detail-row"><span class="detail-label">Valor da Inscrição:</span><span class="detail-value">${Number(aluno.valor_inscricao || 0).toLocaleString("pt-AO", {minimumFractionDigits: 2})} Kz</span></div>
-                    <div class="detail-row"><span class="detail-label">Valor Entregue:</span><span class="detail-value">${Number(aluno.valor_entregue || 0).toLocaleString("pt-AO", {minimumFractionDigits: 2})} Kz</span></div>
-                    <div class="detail-row"><span class="detail-label">Valor Pago:</span><span class="detail-value">${Number(aluno.valor_total_pago || 0).toLocaleString("pt-AO", {minimumFractionDigits: 2})} Kz</span></div>
-                    <div class="detail-row"><span class="detail-label">Valor Pendente:</span><span class="detail-value">${Number(aluno.valor_pendente || 0).toLocaleString("pt-AO", {minimumFractionDigits: 2})} Kz</span></div>
-                </div>
-            </div>
-            
-            ${aluno.observacoes ? `
-            <div class="card mb-3">
-                <div class="card-header text-white">OBSERVAÇÕES</div>
-                <div class="card-body p-3">
-                    <pre style="white-space: pre-wrap; margin: 0; font-family: inherit; font-size: 11px;">${aluno.observacoes}</pre>
-                </div>
-            </div>` : ""}
-            
-            <div class="no-print text-center mt-4">
-                <button onclick="window.print()" class="btn btn-primary">Imprimir / Salvar PDF</button>
-                <button onclick="window.close()" class="btn btn-secondary ms-2">Fechar</button>
-            </div>
-        </body>
-        </html>
-    `;
+    // Helper para escapar HTML
+    const escapeHtml = (text) => {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+    };
     
-    printWindow.document.write(html);
-    printWindow.document.close();
+    const formatDate = (dateStr) => {
+        if (!dateStr) return "";
+        return new Date(dateStr + "T00:00:00").toLocaleDateString("pt-AO");
+    };
+    
+    const formatMoney = (value) => {
+        return Number(value || 0).toLocaleString("pt-AO", {minimumFractionDigits: 2}) + " Kz";
+    };
+    
+    const doc = printWindow.document;
+    doc.write("<!DOCTYPE html>");
+    doc.write("<html lang=\"pt-AO\">");
+    doc.write("<head>");
+    doc.write("<meta charset=\"UTF-8\">");
+    doc.write("<title>Ficha de Inscrição - " + escapeHtml(aluno.numero_aluno) + "</title>");
+    doc.write("<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\">");
+    doc.write("<style>");
+    doc.write("@media print { .no-print { display: none !important; } body { padding: 20px; font-size: 12px; } .card { border: 1px solid #ddd; break-inside: avoid; } .card-header { background: #2c3e50 !important; -webkit-print-color-adjust: exact; } }");
+    doc.write(".detail-row { display: flex; padding: 6px 0; border-bottom: 1px solid #eee; }");
+    doc.write(".detail-label { width: 220px; font-weight: 600; color: #333; flex-shrink: 0; font-size: 11px; }");
+    doc.write(".detail-value { flex: 1; font-size: 11px; }");
+    doc.write(".print-logo { width: 110px; height: auto; margin-bottom: 8px; }");
+    doc.write(".section-title { background: #2c3e50; color: white; padding: 8px 12px; margin: 15px -15px 10px -15px; font-size: 12px; }");
+    doc.write("</style>");
+    doc.write("</head>");
+    doc.write("<body>");
+    doc.write("<div class=\"text-center mb-4\">");
+    doc.write("<img class=\"print-logo\" src=\"" + escapeHtml(logoUrl) + "\" alt=\"Academia de Artes e Música FJC\">");
+    doc.write("<h3 class=\"mb-1\">ACADEMIA DE ARTES</h3>");
+    doc.write("<h4 class=\"mb-0\">FICHA DE INSCRIÇÃO DO ALUNO</h4>");
+    doc.write("<hr>");
+    doc.write("<div class=\"row\">");
+    doc.write("<div class=\"col-6 text-start\"><strong>N.º do Aluno:</strong> " + escapeHtml(aluno.numero_aluno) + "</div>");
+    doc.write("<div class=\"col-6 text-end\"><strong>Data:</strong> " + new Date().toLocaleDateString("pt-AO") + "</div>");
+    doc.write("</div>");
+    doc.write("</div>");
+    
+    doc.write("<div class=\"card mb-3\">");
+    doc.write("<div class=\"card-header text-white\">DADOS DO ALUNO</div>");
+    doc.write("<div class=\"card-body p-3\">");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Nome Completo:</span><span class=\"detail-value\">" + escapeHtml(aluno.nome_completo) + "</span></div>");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Data de Nascimento:</span><span class=\"detail-value\">" + escapeHtml(formatDate(aluno.data_nascimento)) + "</span></div>");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Idade:</span><span class=\"detail-value\">" + escapeHtml(aluno.idade) + " anos</span></div>");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Documento:</span><span class=\"detail-value\">" + escapeHtml(aluno.tipo_documento) + " - " + escapeHtml(aluno.numero_documento) + "</span></div>");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Morada:</span><span class=\"detail-value\">" + escapeHtml(aluno.morada || "Não informada") + "</span></div>");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Irmão(ã) matriculado:</span><span class=\"detail-value\">" + escapeHtml(aluno.possui_irmao ? "Sim - " + (aluno.nome_irmao || "") : "Não") + "</span></div>");
+    doc.write("</div>");
+    doc.write("</div>");
+    
+    doc.write("<div class=\"card mb-3\">");
+    doc.write("<div class=\"card-header text-white\">RESPONSÁVEIS LEGAIS</div>");
+    doc.write("<div class=\"card-body p-3\">");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">1º Responsável:</span><span class=\"detail-value\">" + escapeHtml(aluno.responsavel1_nome || "Não informado") + "</span></div>");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Parentesco:</span><span class=\"detail-value\">" + escapeHtml(aluno.responsavel1_parentesco || "") + "</span></div>");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Contacto:</span><span class=\"detail-value\">" + escapeHtml(aluno.responsavel1_contacto || "") + "</span></div>");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">2º Responsável:</span><span class=\"detail-value\">" + escapeHtml(aluno.responsavel2_nome || "Não informado") + "</span></div>");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Parentesco:</span><span class=\"detail-value\">" + escapeHtml(aluno.responsavel2_parentesco || "") + "</span></div>");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Contacto:</span><span class=\"detail-value\">" + escapeHtml(aluno.responsavel2_contacto || "") + "</span></div>");
+    doc.write("</div>");
+    doc.write("</div>");
+    
+    doc.write("<div class=\"card mb-3\">");
+    doc.write("<div class=\"card-header text-white\">CONTACTO PARA RECADOS OU EMERGÊNCIAS</div>");
+    doc.write("<div class=\"card-body p-3\">");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Nome:</span><span class=\"detail-value\">" + escapeHtml(aluno.emergencia_nome || "") + "</span></div>");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Telefone:</span><span class=\"detail-value\">" + escapeHtml(aluno.emergencia_telefone || "") + "</span></div>");
+    doc.write("</div>");
+    doc.write("</div>");
+    
+    doc.write("<div class=\"card mb-3\">");
+    doc.write("<div class=\"card-header text-white\">DADOS DA INSCRIÇÃO</div>");
+    doc.write("<div class=\"card-body p-3\">");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Curso:</span><span class=\"detail-value\">" + escapeHtml(aluno.curso_nome || "Não informado") + "</span></div>");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Data da Inscrição:</span><span class=\"detail-value\">" + escapeHtml(formatDate(aluno.data_inscricao)) + "</span></div>");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Valor da Inscrição:</span><span class=\"detail-value\">" + escapeHtml(formatMoney(aluno.valor_inscricao)) + "</span></div>");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Valor Entregue:</span><span class=\"detail-value\">" + escapeHtml(formatMoney(aluno.valor_entregue)) + "</span></div>");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Valor Pago:</span><span class=\"detail-value\">" + escapeHtml(formatMoney(aluno.valor_total_pago)) + "</span></div>");
+    doc.write("<div class=\"detail-row\"><span class=\"detail-label\">Valor Pendente:</span><span class=\"detail-value\">" + escapeHtml(formatMoney(aluno.valor_pendente)) + "</span></div>");
+    doc.write("</div>");
+    doc.write("</div>");
+    
+    if (aluno.observacoes) {
+        doc.write("<div class=\"card mb-3\">");
+        doc.write("<div class=\"card-header text-white\">OBSERVAÇÕES</div>");
+        doc.write("<div class=\"card-body p-3\">");
+        doc.write("<pre style=\"white-space: pre-wrap; margin: 0; font-family: inherit; font-size: 11px;\">" + escapeHtml(aluno.observacoes) + "</pre>");
+        doc.write("</div>");
+        doc.write("</div>");
+    }
+    
+    doc.write("<div class=\"no-print text-center mt-4\">");
+    doc.write("<button onclick=\"window.print()\" class=\"btn btn-primary\">Imprimir / Salvar PDF</button>");
+    doc.write("<button onclick=\"window.close()\" class=\"btn btn-secondary ms-2\">Fechar</button>");
+    doc.write("</div>");
+    
+    doc.write("</body>");
+    doc.write("</html>");
+    doc.close();
 }
 </script>
 '?>

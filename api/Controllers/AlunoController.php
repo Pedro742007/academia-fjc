@@ -24,11 +24,17 @@ class AlunoController extends Controller
 
         $page = max(1, (int)($_GET['page'] ?? 1));
         $search = trim($_GET['search'] ?? '');
+        $cursoId = !empty($_GET['curso_id']) ? (int)$_GET['curso_id'] : null;
         
+        $conditions = [];
+        if ($cursoId) {
+            $conditions['curso_id'] = $cursoId;
+        }
+
         if ($search) {
-            $result = $this->alunoModel->search($search, $page);
+            $result = $this->alunoModel->search($search, $page, 15, $conditions);
         } else {
-            $result = $this->alunoModel->paginate($page, 15, [], 'created_at', 'DESC');
+            $result = $this->alunoModel->paginate($page, 15, $conditions, 'created_at', 'DESC');
         }
 
         $cursos = $this->cursoModel->getAtivos();
@@ -38,6 +44,7 @@ class AlunoController extends Controller
             'alunos' => $result['data'],
             'pagination' => $result,
             'search' => $search,
+            'curso_id' => $cursoId,
             'cursos' => $cursos,
             'stats' => $stats,
         ]);

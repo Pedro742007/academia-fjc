@@ -11,10 +11,25 @@ abstract class Model
     protected string $primaryKey = 'id';
     protected array $fillable = [];
     protected array $dates = ['created_at', 'updated_at'];
+    protected array $allowedColumns = [];
 
     public function __construct()
     {
         $this->db = Database::getInstance();
+    }
+
+    protected function validateColumn(string $column): string
+    {
+        if (empty($this->allowedColumns)) {
+            $stmt = $this->db->query("DESCRIBE {$this->table}");
+            $this->allowedColumns = array_column($stmt->fetchAll(), 'Field');
+        }
+        
+        if (!in_array($column, $this->allowedColumns, true)) {
+            throw new \InvalidArgumentException("Invalid column: {$column}");
+        }
+        
+        return $column;
     }
 
     public function find(int $id): ?array
@@ -37,10 +52,13 @@ abstract class Model
         $params = [];
 
         foreach ($conditions as $column => $value) {
+            $this->validateColumn($column);
             $sql .= " AND {$column} = ?";
             $params[] = $value;
         }
 
+        $this->validateColumn($orderBy);
+        $orderDir = strtoupper($orderDir) === 'ASC' ? 'ASC' : 'DESC';
         $sql .= " ORDER BY {$orderBy} {$orderDir}";
         
         $stmt = $this->db->prepare($sql);
@@ -56,6 +74,7 @@ abstract class Model
         $params = [];
         
         foreach ($conditions as $column => $value) {
+            $this->validateColumn($column);
             $where .= " AND {$column} = ?";
             $params[] = $value;
         }
@@ -64,6 +83,9 @@ abstract class Model
         $countStmt->execute($params);
         $total = $countStmt->fetchColumn();
 
+        $this->validateColumn($orderBy);
+        $orderDir = strtoupper($orderDir) === 'ASC' ? 'ASC' : 'DESC';
+        
         $sql = "SELECT * FROM {$this->table} {$where} ORDER BY {$orderBy} {$orderDir} LIMIT {$perPage} OFFSET {$offset}";
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
@@ -167,6 +189,7 @@ abstract class Model
         $params = [];
         
         foreach ($conditions as $column => $value) {
+            $this->validateColumn($column);
             $where .= " AND {$column} = ?";
             $params[] = $value;
         }
