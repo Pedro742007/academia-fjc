@@ -50,7 +50,7 @@ function e(string $key, $fallback = ''): string {
         </div>
         <div class="col-md-4">
             <label class="form-label">Nº do Documento <span class="text-danger">*</span></label>
-            <input type="text" name="numero_documento" class="form-control" value="<?= e('numero_documento', $aluno['numero_documento']) ?>" required maxlength="50">
+            <input type="text" name="numero_documento" class="form-control" value="<?= e('numero_documento', $aluno['numero_documento']) ?>" required maxlength="14" data-mask="bi">
         </div>
     </div>
         </div>

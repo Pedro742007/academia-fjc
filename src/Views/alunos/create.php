@@ -47,7 +47,15 @@ document.addEventListener("DOMContentLoaded", function() {
     // Máscaras
     const masks = {
         telefone: (v) => v.replace(/\\D/g, "").replace(/^(\\d{2})(\\d{4})(\\d{4}).*/, "($1) $2-$3"),
-        bi: (v) => v.replace(/\\D/g, "").replace(/^(\\d{9})(\\d{2})?.*/, "$1$2"),
+        bi: (v) => {
+            const clean = v.toUpperCase().replace(/[^0-9A-Z]/g, "");
+            const nums = clean.replace(/[^0-9]/g, "");
+            const lets = clean.replace(/[^A-Z]/g, "");
+            const d1 = nums.slice(0, 9);
+            const l = lets.slice(0, 2);
+            const d2 = nums.slice(9, 12);
+            return d1 + l + d2;
+        },
         moeda: (v) => {
             v = v.replace(/\\D/g, "");
             if (!v) return "";
@@ -122,7 +130,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 </div>
                 <div class="col-md-4">
                     <label class="form-label fw-medium">Nº do Documento <span class="text-danger">*</span></label>
-                    <input type="text" name="numero_documento" class="form-control form-control-lg" value="<?= htmlspecialchars(old('numero_documento')) ?>" required maxlength="20" placeholder="Ex: 123456789LA042" data-mask="bi">
+                    <input type="text" name="numero_documento" class="form-control form-control-lg" value="<?= htmlspecialchars(old('numero_documento')) ?>" required maxlength="14" placeholder="Ex: 123456789LA042" data-mask="bi">
                     <div class="form-text">Formato BI: 9 dígitos + 2 letras + 3 dígitos (ex: 123456789LA042)</div>
                     <div class="invalid-feedback">Informe o número do documento</div>
                 </div>

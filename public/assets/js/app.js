@@ -118,6 +118,19 @@ function initMasks() {
             e.target.value = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
         });
     });
+
+    // BI / Documento angolano: 9 dígitos + 2 letras + 3 dígitos (ex: 123456789LA042)
+    document.querySelectorAll('input[data-mask="bi"]').forEach(input => {
+        input.addEventListener('input', function(e) {
+            const clean = e.target.value.toUpperCase().replace(/[^0-9A-Z]/g, '');
+            const nums = clean.replace(/[^0-9]/g, '');
+            const lets = clean.replace(/[^A-Z]/g, '');
+            const d1 = nums.slice(0, 9);
+            const l = lets.slice(0, 2);
+            const d2 = nums.slice(9, 12);
+            e.target.value = d1 + l + d2;
+        });
+    });
 }
 
 // ===== VALIDAÇÃO DE FORMULÁRIOS =====
